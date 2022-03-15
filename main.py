@@ -51,12 +51,12 @@ class Path:
         return (firstCoord, sequentialCommands)
 
 class PathMap:
-    def __init__(self, type = 1, pathMap):
-        self.type = type
+    def __init__(self, pathType = 1, pathMap):
+        self.pathType = pathType
         self.pathMap = {}
-        if self.type == 1:
+        if self.pathType == 1:
             self.pathMap = pathMap
-        elif self.type == 0:
+        elif self.pathType == 0:
             unsortedCoords = {}
             for row in pathMap:
                 if not any(row): continue
