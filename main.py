@@ -6,8 +6,9 @@ import urandom
 brain=Brain()
 
 # Robot configuration code
-mLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
-mRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)
+left_drive_smart = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
+right_drive_smart = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)
+drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM, 1)
 
 
 # wait for rotation sensor to fully initialize
@@ -21,7 +22,7 @@ class pathDirection:
     UP = 0
     DOWN = 180
     RIGHT = 90
-    LEFT = 270
+    LEFT = -90
 
 class pathMapType:
     LIST = 0
@@ -38,7 +39,11 @@ class Path:
     def getDirections(self) -> tuple:
         sequentialCommands = []
         firstCoord = lastCoord = self.coords[1]
-        for coord in self.coords[:1]: # skip first coord
+        first = True
+        for coord in self.coords.values():
+            if first:
+                first = False
+                continue
             if coord[1] > lastCoord[1]:
                 sequentialCommands.append(pathDirection.UP)
             elif coord[1] < lastCoord[1]:
@@ -55,7 +60,8 @@ class PathMap:
         self.pathType = pathType
         self.pathMap = {}
         if self.pathType == 1:
-            self.pathMap = pathMap
+            for i in range(len(pathMap)):
+                self.pathMap[i + 1] = pathMap[i]
         elif self.pathType == 0:
             unsortedCoords = {}
             for row in pathMap:
@@ -75,46 +81,32 @@ class Drivetrain:
     inch_per_rotation = 7.85
     tile_size_degrees = (360 / inch_per_rotation) * 8
 
-    def __init__(self, leftM, rightM):
-        self.left = leftM
-        self.right = rightM
-        self.stopped = True
-
-    def stop(self):
-        self.left.stop()
-        self.right.stop()
-        self.stopped = True
-
-    def run(self):
-        self.left.spin(FORWARD)
-        self.right.spin(FORWARD)
-        self.stopped = False
+    def __init__(self, drivetrain):
+        self.drive = drivetrain
 
     def move_for_tile(self): # TODO: test tile with front color sensor
         self.stopped = False
-        self.left.spin(FORWARD, self.tile_size_degrees, DEGREES)
-        self.right.spin(FORWARD, self.tile_size_degrees, DEGREES)
+        self.drive.drive_for(FORWARD, self.tile_size_degrees, MM)
         self.stopped = True
 
     def rotate(self, degree): # TODO: fix rotation algorithm
         self.stopped = False
-        self.left.spin_for(FORWARD, degree*2, DEGREES)
-        self.right.spin_for(FORWARD, -degree*2 , DEGREES)
+        self.drive.turn_for(RIGHT, degree, DEGREES)
 
     def run_path(self, path: Path):
         pathData = path.getDirections()
-        print(f"Running path {path}. Robot start position is at ({pathData[0][0]}, {pathData[0][1]}). Amount of positions: {len(pathData[1].keys())}")
         directions = pathData[1]
         currentHeading = 0 # TODO: find accurate measurement
         for degree in directions:
-            self.rotate(degree - currentHeading)
+            if degree - currentHeading != 0:
+                self.rotate(degree - currentHeading)
             currentHeading = degree
             self.move_for_tile()
 
 # -- Execution --
 def main():
     global Drivetrain, Path, PathMap # "import" everything
-    drivetrain = Drivetrain(mLeft, mRight)
+    dt = Drivetrain(drivetrain)
 
     simple_circle = Path(PathMap(0, [
                 [9,   8,  7,  6,  5],
@@ -124,6 +116,7 @@ def main():
                 [13, 14, 15, 16,  1]
             ])) # Path to rotate around in a circle pattern
     zig_zag = Path(PathMap(0, [[9, 8, 0, 0, 0], [0, 7, 6, 0, 0], [0, 0, 5, 4, 0], [0, 0, 0, 3, 2], [0, 0, 0, 0, 1]])) # Path to zig zag diagonally from bottom right to top left
-    drivetrain.run_path(simple_circle)
+    simple = Path(PathMap(1, [(4, 4), (3, 4)]))
+    dt.run_path(zig_zag)
 
 main()
