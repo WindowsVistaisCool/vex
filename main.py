@@ -51,7 +51,7 @@ class Path:
         return (firstCoord, sequentialCommands)
 
 class PathMap:
-    def __init__(self, pathType = 1, pathMap):
+    def __init__(self, pathType, pathMap):
         self.pathType = pathType
         self.pathMap = {}
         if self.pathType == 1:
