@@ -54,7 +54,7 @@ class Drivetrain:
         self.left.spin_for(FORWARD, degree*2, DEGREES)
         self.right.spin_for(FORWARD, -degree*2 , DEGREES)
 
-    def do_path(self, path):
+    def do_path(self, path: Path):
         directions = path.getDirections()[1]
         currentHeading = 0 # TODO: find accurate measurement
         for direction in directions:
@@ -72,15 +72,16 @@ class Path:
             for order in row:
                 if order != 0:
                     self.unsortedCoords[order] = (row.index(order), pathMap.index(row))
-        for key in sorted(self.unsortedCoords.keys()): self.coords[key] = self.unsortedCoords[key]
+        for key in sorted(self.unsortedCoords.keys()):
+            self.coords[key] = self.unsortedCoords[key]
 
-    def getRawPathMap(self):
+    def getRawPathMap(self) -> list:
         return self.pathMap
 
-    def getRawCoords(self):
+    def getRawCoords(self) -> dict:
         return self.coords
 
-    def getDirections(self):
+    def getDirections(self) -> tuple:
         sequentialCommands = []
         firstCoord = lastCoord = self.coords[1]
         for coord in self.coords[:1]: # skip first coord
