@@ -3,15 +3,15 @@ from vex import *
 import urandom
 
 # Brain should be defined by default
-brain = Brain()
+brain=Brain()
 
 # Robot configuration code
 mLeft = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
 mRight = Motor(Ports.PORT2, GearSetting.RATIO_18_1, True)
 
+
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
-
 #endregion VEXcode Generated Robot Configuration
 
 # ------ Adam and Kyle's code ------
@@ -29,11 +29,11 @@ class pathMapType:
 
 # -- Objects --
 class Path:
-    def __init__(self, pathMap: PathMap):
-        self.pathMap = pathMap.data()
+    def __init__(self, pathMap):
+        self.coords = pathMap.data()
 
-    def getRawPathMap(self) -> dict:
-        return self.pathMap
+    def getRawCoords(self) -> dict:
+        return self.coords
 
     def getDirections(self) -> tuple:
         sequentialCommands = []
@@ -92,8 +92,8 @@ class Drivetrain:
 
     def move_for_tile(self): # TODO: test tile with front color sensor
         self.stopped = False
-        self.left.spin(FORWARD, tile_size_degrees, DEGREES)
-        self.right.spin(FORWARD, tile_size_degrees, DEGREES)
+        self.left.spin(FORWARD, self.tile_size_degrees, DEGREES)
+        self.right.spin(FORWARD, self.tile_size_degrees, DEGREES)
         self.stopped = True
 
     def rotate(self, degree): # TODO: fix rotation algorithm
