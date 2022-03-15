@@ -38,7 +38,7 @@ class Path:
         self.pathMap = pathMap.data()
 
     def getRawPathMap(self) -> dict:
-        return self.patMap
+        return self.pathMap
 
     def getDirections(self) -> tuple:
         sequentialCommands = []
@@ -95,7 +95,7 @@ class Drivetrain:
         self.right.spin(FORWARD)
         self.stopped = False
 
-    def move_for_tile(self):
+    def move_for_tile(self): # TODO: test tile with front color sensor
         self.stopped = False
         self.left.spin(FORWARD, tile_size_degrees, DEGREES)
         self.right.spin(FORWARD, tile_size_degrees, DEGREES)
@@ -107,7 +107,9 @@ class Drivetrain:
         self.right.spin_for(FORWARD, -degree*2 , DEGREES)
 
     def run_path(self, path: Path):
-        directions = path.getDirections()[1]
+        pathData = path.getDirections()
+        print(f"Running path {path}. Robot start position is at ({pathData[0][0]}, {pathData[0][1]}). Amount of positions: {len(pathData[1].keys())}")
+        directions = pathData[1]
         currentHeading = 0 # TODO: find accurate measurement
         for direction in directions:
             self.rotate(directions.value - currentHeading)
