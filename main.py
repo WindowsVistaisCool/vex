@@ -89,9 +89,10 @@ class Drivetrain:
         self.drive.drive_for(FORWARD, self.tile_size_degrees, MM)
         self.stopped = True
 
-    def rotate(self, degree): # TODO: fix rotation algorithm
+    def rotate(self, degree):
         self.stopped = False
         self.drive.turn_for(RIGHT, degree, DEGREES)
+        self.stopped = True
 
     def run_path(self, path: Path):
         pathData = path.getDirections()
