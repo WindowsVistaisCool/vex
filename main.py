@@ -26,12 +26,16 @@ class pathDirection(enum.Enum):
         degrees = {UP: 0, DOWN: 180, RIGHT: 90, LEFT: 270}
         return degrees[direction]
 
+class pathMapType(enum.Enum):
+    LIST = 0
+    COORD = 1
+
 class Path:
-    def __init__(self, pathMap: list):
-        self.rawPathMap = pathMap
+    def __init__(self, pathMap: pathMap):
+        self.rawPathMap = pathMap.data()
         self.unsortedCoords = {}
         self.coords = {}
-        for row in pathMap:
+        for row in pathMap.data():
             if not any(row): continue
             for order in row:
                 if order != 0:
@@ -59,6 +63,14 @@ class Path:
                 sequentialCommands.append(pathDirection.LEFT)
             lastCoord = coord
         return (firstCoord, sequentialCommands)
+
+class PathMap:
+    def __init__(self, type = pathMapType.LIST: pathMapType, pathMap):
+        self.type = type
+        self.pathMap = pathMap
+
+    def data(self):
+        return self.pathMap
 
 class Drivetrain:
     tile_square_size = 8
