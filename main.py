@@ -17,18 +17,13 @@ wait(30, MSEC)
 # ------ Adam and Kyle's code ------
 
 # -- Enums --
-import enum
-class pathDirection(enum.Enum):
+class pathDirection:
     UP = 0
     DOWN = 180
     RIGHT = 90
     LEFT = 270
 
-    def getDegree(self, direction: pathDirection) -> int:
-        degrees = {UP: 0, DOWN: 180, RIGHT: 90, LEFT: 270}
-        return degrees[direction]
-
-class pathMapType(enum.Enum):
+class pathMapType:
     LIST = 0
     COORD = 1
 
@@ -56,12 +51,12 @@ class Path:
         return (firstCoord, sequentialCommands)
 
 class PathMap:
-    def __init__(self, type = pathMapType.LIST: pathMapType, pathMap):
+    def __init__(self, type = 1, pathMap):
         self.type = type
         self.pathMap = {}
-        if self.type == pathMapType.COORDS:
+        if self.type == 1:
             self.pathMap = pathMap
-        elif self.type == pathMapType.LIST:
+        elif self.type == 0:
             unsortedCoords = {}
             for row in pathMap:
                 if not any(row): continue
@@ -111,24 +106,24 @@ class Drivetrain:
         print(f"Running path {path}. Robot start position is at ({pathData[0][0]}, {pathData[0][1]}). Amount of positions: {len(pathData[1].keys())}")
         directions = pathData[1]
         currentHeading = 0 # TODO: find accurate measurement
-        for direction in directions:
-            self.rotate(directions.value - currentHeading)
-            currentHeading = direction.value
+        for degree in directions:
+            self.rotate(degree - currentHeading)
+            currentHeading = degree
             self.move_for_tile()
 
 # -- Execution --
 def main():
-    global Drivetrain, Path, PathMap, pathMapType # "import" everything
+    global Drivetrain, Path, PathMap # "import" everything
     drivetrain = Drivetrain(mLeft, mRight)
 
-    simple_circle = Path(PathMap(pathMapType.LIST, [
+    simple_circle = Path(PathMap(0, [
                 [9,   8,  7,  6,  5],
                 [10,  0,  0,  0,  4],
                 [11,  0,  0,  0,  3],
                 [12,  0,  0,  0,  2],
                 [13, 14, 15, 16,  1]
             ])) # Path to rotate around in a circle pattern
-    zig_zag = Path(PathMap(pathMapType.LIST, [[9, 8, 0, 0, 0], [0, 7, 6, 0, 0], [0, 0, 5, 4, 0], [0, 0, 0, 3, 2], [0, 0, 0, 0, 1]])) # Path to zig zag diagonally from bottom right to top left
+    zig_zag = Path(PathMap(0, [[9, 8, 0, 0, 0], [0, 7, 6, 0, 0], [0, 0, 5, 4, 0], [0, 0, 0, 3, 2], [0, 0, 0, 0, 1]])) # Path to zig zag diagonally from bottom right to top left
     drivetrain.run_path(simple_circle)
 
 main()
