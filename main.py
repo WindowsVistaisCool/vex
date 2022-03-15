@@ -27,7 +27,7 @@ class pathDirection(enum.Enum):
         return degrees[direction]
 
 class Path:
-    def __init__(self, pathMap):
+    def __init__(self, pathMap: list):
         self.rawPathMap = pathMap
         self.unsortedCoords = {}
         self.coords = {}
@@ -40,7 +40,7 @@ class Path:
             self.coords[key] = self.unsortedCoords[key]
 
     def getRawPathMap(self) -> list:
-        return self.pathMap
+        return self.rawPathMap
 
     def getRawCoords(self) -> dict:
         return self.coords
@@ -112,6 +112,7 @@ def main():
                 [12,  0,  0,  0,  2],
                 [13, 14, 15, 16,  1]
             ])
+    zig_zag = Path([[9, 8, 0, 0, 0], [0, 7, 6, 0, 0], [0, 0, 5, 4, 0], [0, 0, 0, 3, 2], [0, 0, 0, 0, 1]])
     drivetrain.run_path(simple_circle)
 
 main()
