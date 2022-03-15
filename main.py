@@ -22,45 +22,9 @@ class pathDirection(enum.Enum):
     RIGHT = 90
     LEFT = 270
 
-class Drivetrain:
-    tile_square_size = 8
-    tile_center_size = 2.5
-    inch_per_rotation = 7.85
-    tile_size_degrees = (360 / inch_per_rotation) * 8
-
-    def __init__(self, leftM, rightM):
-        self.left = leftM
-        self.right = rightM
-        self.stopped = True
-
-    def stop(self):
-        self.left.stop()
-        self.right.stop()
-        self.stopped = True
-
-    def run(self):
-        self.left.spin(FORWARD)
-        self.right.spin(FORWARD)
-        self.stopped = False
-
-    def move_for_tile(self):
-        self.stopped = False
-        self.left.spin(FORWARD, tile_size_degrees, DEGREES)
-        self.right.spin(FORWARD, tile_size_degrees, DEGREES)
-        self.stopped = True
-
-    def rotate(self, degree): # TODO: fix rotation algorithm
-        self.stopped = False
-        self.left.spin_for(FORWARD, degree*2, DEGREES)
-        self.right.spin_for(FORWARD, -degree*2 , DEGREES)
-
-    def do_path(self, path: Path):
-        directions = path.getDirections()[1]
-        currentHeading = 0 # TODO: find accurate measurement
-        for direction in directions:
-            self.rotate(directions.value - currentHeading)
-            currentHeading = direction.value
-            self.move_for_tile()
+    def getDegree(self, direction: pathDirection) -> int:
+        degrees = {UP: 0, DOWN: 180, RIGHT: 90, LEFT: 270}
+        return degrees[direction]
 
 class Path:
     def __init__(self, pathMap):
@@ -95,6 +59,46 @@ class Path:
                 sequentialCommands.append(pathDirection.LEFT)
             lastCoord = coord
         return (firstCoord, sequentialCommands)
+
+class Drivetrain:
+    tile_square_size = 8
+    tile_center_size = 2.5
+    inch_per_rotation = 7.85
+    tile_size_degrees = (360 / inch_per_rotation) * 8
+
+    def __init__(self, leftM, rightM):
+        self.left = leftM
+        self.right = rightM
+        self.stopped = True
+
+    def stop(self):
+        self.left.stop()
+        self.right.stop()
+        self.stopped = True
+
+    def run(self):
+        self.left.spin(FORWARD)
+        self.right.spin(FORWARD)
+        self.stopped = False
+
+    def move_for_tile(self):
+        self.stopped = False
+        self.left.spin(FORWARD, tile_size_degrees, DEGREES)
+        self.right.spin(FORWARD, tile_size_degrees, DEGREES)
+        self.stopped = True
+
+    def rotate(self, degree): # TODO: fix rotation algorithm
+        self.stopped = False
+        self.left.spin_for(FORWARD, degree*2, DEGREES)
+        self.right.spin_for(FORWARD, -degree*2 , DEGREES)
+
+    def run_path(self, path: Path):
+        directions = path.getDirections()[1]
+        currentHeading = 0 # TODO: find accurate measurement
+        for direction in directions:
+            self.rotate(directions.value - currentHeading)
+            currentHeading = direction.value
+            self.move_for_tile()
 
 def main():
     # Define drivtrain to control both motors at once
