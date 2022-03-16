@@ -44,6 +44,7 @@ class Path:
             if first:
                 first = False
                 continue
+            # TODO: this logic is probably flawed somehow
             if coord[1] > lastCoord[1]:
                 sequentialCommands.append(pathDirection.UP)
             elif coord[1] < lastCoord[1]:
