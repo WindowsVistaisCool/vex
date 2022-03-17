@@ -104,16 +104,22 @@ def main():
     global Drivetrain, Path, PathMap # "import" everything
     dt = Drivetrain(drivetrain)
 
+    # Paths to run on robot
     simple_circle = Path(PathMap([
                 [9,   8,  7,  6,  5],
                 [10,  0,  0,  0,  4],
                 [11,  0,  0,  0,  3],
                 [12,  0,  0,  0,  2],
                 [13, 14, 15, 16,  1]
-            ])) # Path to rotate around in a circle pattern
-    zig_zag = Path({1: (4, 4), 2: (3, 4), 3: (3,3), 4: (2, 3), 5: (2, 2)}) # Path to zig zag diagonally from bottom right to top left
-    simple = Path({1: (4, 4), 2: (3, 4)})
-    # dt.rotate(67)
-    dt.run_path(simple_circle)
+            ]))
+    spiral = Path(PathMap([
+                [9,   8,  7,  6,  5],
+                [10, 21, 20, 19,  4],
+                [11, 22, 25, 18,  3],
+                [12, 23, 24, 17,  2],
+                [13, 14, 15, 16,  1]
+            ]))
+
+    dt.run_path(spiral) # Run path
 
 main()
