@@ -15,7 +15,10 @@ drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM
 wait(30, MSEC)
 #endregion VEXcode Generated Robot Configuration
 
+DEBUG = True
+
 def prscreen(text: str) -> None:
+    if not DEBUG: return
     brain.screen.print(str(text))
     brain.screen.next_row()
 
@@ -30,6 +33,7 @@ class pathDirection:
 class Path:
     def __init__(self, pathData):
         # check if pathData is a PathMap instance or coordinate list
+        prscreen(f"Starting path with {type(pathData)}...")
         self.coords = pathData.data() if isinstance(pathData, PathMap) else pathData
 
     def getRawCoords(self) -> dict:
@@ -56,6 +60,7 @@ class Path:
 
 class PathMap:
     def __init__(self, pathMap):
+        prscreen("PathMap init...")
         self.pathMap = {}
         unsortedCoords = {}
         for row in pathMap:
@@ -87,20 +92,21 @@ class Drivetrain:
         self.stopped = True
 
     def run_path(self, path: Path):
+        prscreen("Driving path...")
         pathData = path.getDirections()
-        brain.screen.next_row()
-        brain.screen.print("Starting path at " + str(pathData[0]))
         directions = pathData[1]
         currentHeading = 0 # TODO: find accurate measurement
         for degree in directions:
             if degree - currentHeading != 0:
+                prscreen("> ROTATE " + degree - currentHeading)
                 self.rotate(degree - currentHeading)
             currentHeading = degree
+            prscreen("> MOVE TILE")
             self.move_for_tile()
 
 # -- Execution --
 def main():
-    global Drivetrain, Path, PathMap # "import" everything
+    global Drivetrain, Path, PathMap, prscreen # "import" everything
     dt = Drivetrain(drivetrain)
 
     # Paths to run on robot
