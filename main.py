@@ -15,6 +15,10 @@ drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM
 wait(30, MSEC)
 #endregion VEXcode Generated Robot Configuration
 
+def prscreen(text: str) -> None:
+    brain.screen.print(str(text))
+    brain.screen.next_row()
+
 # -- Enums --
 class pathDirection:
     UP = 0
