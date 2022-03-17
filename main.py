@@ -15,18 +15,17 @@ drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM
 wait(30, MSEC)
 #endregion VEXcode Generated Robot Configuration
 
-# ------ Adam and Kyle's code ------
-
 # -- Enums --
 class pathDirection:
     UP = 0
-    DOWN = 134
+    DOWN = 134 # Should never be used
     RIGHT = 67
     LEFT = -67
 
 # -- Objects --
 class Path:
     def __init__(self, pathData):
+        # check if pathData is a PathMap instance or coordinate list
         self.coords = pathData.data() if isinstance(pathData, PathMap) else pathData
 
     def getRawCoords(self) -> dict:
@@ -36,23 +35,19 @@ class Path:
         sequentialCommands = []
         firstCoord = lastCoord = self.coords[1]
         first = True
-        brain.screen.print(sorted(self.coords.items()))
-        brain.screen.next_row()
         for k, coord in sorted(self.coords.items()):
             if first:
                 first = False
                 continue
-            # TODO: this logic is probably flawed somehow
-            if coord[1] < lastCoord[1]:
+            if coord[1] < lastCoord[1]: # next tile is above
                 sequentialCommands.append(pathDirection.UP)
-            elif coord[1] > lastCoord[1]:
+            elif coord[1] > lastCoord[1]: # next tile is below
                 sequentialCommands.append(pathDirection.DOWN)
-            if coord[0] > lastCoord[0]:
+            if coord[0] > lastCoord[0]: # next tile is right
                 sequentialCommands.append(pathDirection.RIGHT)
-            elif coord[0] < lastCoord[0]:
+            elif coord[0] < lastCoord[0]: # next tile is left
                 sequentialCommands.append(pathDirection.LEFT)
             lastCoord = coord
-        brain.screen.print(sequentialCommands)
         return (firstCoord, sequentialCommands)
 
 class PathMap:
