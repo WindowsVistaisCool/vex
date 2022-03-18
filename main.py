@@ -25,16 +25,17 @@ def prscreen(text) -> None:
 # -- Enums --
 class pathDirection:
     UP = 0
-    DOWN = -134
-    RIGHT = 67
-    LEFT = -67
+    DOWN = -140
+    RIGHT = 70
+    LEFT = -70
 
 # -- Objects --
 class Path:
-    def __init__(self, pathData):
+    def __init__(self, pathData, direction=0):
         # check if pathData is a PathMap instance or coordinate list
         prscreen("Starting path with " + str(type(pathData)))
         self.coords = pathData.data() if isinstance(pathData, PathMap) else pathData
+        self.direction = direction
 
     def getRawCoords(self) -> dict:
         return self.coords
@@ -62,7 +63,7 @@ class Path:
                 sequentialCommands.append(pD)
             lastCoord = coord
             currentHead = pD
-        return (firstCoord, sequentialCommands)
+        return (firstCoord, sequentialCommands, self.direction)
 
 class PathMap:
     def __init__(self, pathMap):
@@ -76,13 +77,12 @@ class PathMap:
                     unsortedCoords[order] = (row.index(order), pathMap.index(row))
         for key in sorted(unsortedCoords.keys()):
             self.pathMap[key] = unsortedCoords[key]
-        prscreen("Coords: " + str(self.pathMap[15]))
 
     def data(self):
         return self.pathMap
 
 class Drivetrain:
-    tile_square_size = 12.5
+    tile_square_size = 12.75
 
     def __init__(self, drivetrain):
         self.drive = drivetrain
@@ -100,7 +100,7 @@ class Drivetrain:
         prscreen("Driving path...")
         pathData = path.getDirections()
         directions = pathData[1]
-        currentHeading = 0 # TODO: find accurate measurement
+        currentHeading = pathData[2]
         for degree in directions:
             if degree - currentHeading != 0:
                 prscreen("> ROTATE " + str(degree - currentHeading))
@@ -115,20 +115,22 @@ def main():
     dt = Drivetrain(drivetrain)
 
     # Paths to run on robot
-    simple_circle = Path(PathMap([
+    path3 = Path(PathMap([
         [9,   8,  7,  6,  5],
         [10,  0,  0,  0,  4],
         [11,  0,  0,  0,  3],
         [12,  0,  0,  0,  2],
-        [13, 14, 15, 16,  1]
+        [13,  0,  0,  0,  1]
     ]))
-    # spiral = Path(PathMap([
-    #     [9,   8,  7,  6,  5],
-    #     [10, 21, 20, 19,  4],
-    #     [11, 22, 25, 18,  3],
-    #     [12, 23, 24, 17,  2],
-    #     [13, 14, 15, 16,  1]
-    # ]))
+    
+    zig_zag = Path(PathMap([
+        [1, 2, 0, 0, 0],
+        [0, 3, 4, 0, 0],
+        [0, 0, 5, 6, 0],
+        [0, 0, 0, 7, 8],
+        [0, 0, 0, 0, 9]
+    ]))
+
     spiral = Path({
         1: (4, 4),
         2: (4, 3),
@@ -157,12 +159,14 @@ def main():
         25: (2, 2)
     })
 
-    r_t = Path({
-        1: (1, 0),
-        2: (0, 0),
-        3: (0, 1)
-    })
+    mow = Path(PathMap([
+        [25, 16, 15,  6, 5],
+        [24, 17, 14,  7, 4],
+        [23, 18, 13,  8, 3],
+        [22, 19, 12,  9, 2],
+        [21, 20, 11, 10, 1]
+    ]))
 
-    dt.run_path(spiral) # Run path
+    dt.run_path(mow) # Run path
 
 main()
