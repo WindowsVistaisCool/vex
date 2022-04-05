@@ -18,7 +18,7 @@ wait(30, MSEC)
 #endregion VEXcode Generated Robot Configuration
 def main():
     math_list = [5, 1, 3]
-    def sum_list(l: list) -> int:
+    def sum_list(l):
         lastI = 0
         for i in l: lastI += i
         return lastI
