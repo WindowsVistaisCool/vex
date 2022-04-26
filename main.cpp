@@ -40,36 +40,56 @@ vision Vision5 = vision (PORT5, 66, Vision5__REDD, Vision5__GREENN, Vision5__BLU
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       {author}                                                  */
-/*    Created:      {date}                                                    */
+/*    Author:       Kyle Rush                                                 */
+/*    Created:      4/25                                                      */
 /*    Description:  V5 project                                                */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-// Include the V5 Library
-#include "vex.h"
-  
 // Allows for easier use of the VEX Library
 using namespace vex;
 
 int main() {
-  while (true) {
-    Brain.Screen.clearLine(1);
-    Brain.Screen.setCursor(1, 1);
-    bool foundRed = Vision5.takeSnapshot(Vision5__REDD);
-    bool foundGreen = Vision5.takeSnapshot(Vision5__GREENN);
-    bool foundBlue = Vision5.takeSnapshot(Vision5__BLUEE);
-    bool anyObject { foundRed || foundGreen || foundBlue };
-    if (anyObject) {
-      if (foundRed) {
-        Brain.Screen.print("JOE FOUND RED!!");
-      } else if (foundGreen) {
-        Brain.Screen.print("JOE FOUND GREEN!!");
-      } else if (foundBlue) {
-        Brain.Screen.print("JOE FOUND BLUE!!");
-      }
-    } else {
-      Brain.Screen.print("No objcects :(");
+    unsigned int lastKnownObjectCount { 0 };
+    bool stateChanged = true;
+    bool objectsDetected = false;
+    bool easterEgg = false;
+    while (true) {
+        // easter egg :D (its april don't judge)
+        if (Brain.Screen.pressed) {
+            wait(0.25, SECONDS);
+            easterEgg = !easterEgg;
+        }
+        if (stateChanged) {
+            stateChanged = false;
+            Brain.Screen.clearScreen(easterEgg ? color.yellow : color.black);
+            Brain.Screen.setCursor(1, 1);
+        }
+        if (Vision5.objectCount > 0) {
+            if (!objectsDetected) {
+                stateChanged = true;
+                objectsDetected = true;
+            }
+            if (!objectsDetected || lastKnownObjectCount != Vision5.objectCount) {
+                Brain.Screen.clearScreen
+                Brain.Screen.print("There are currently " + std::to_string(Vision5.objectCount) + " objects seen.");
+                Brain.Screen.nextRow();
+                lastKnownObjectCount = Vision5.objectCount;
+                Brain.Screen.print("-- Objects currently detected --");
+                for (const vision::object &obj : Vision5.objects) {
+                    Brain.Screen.print("<vision::object> id=\"" + obj.id = "\" centered at (" + obj.centerX + ", " + obj.centerY + ")");
+                }
+            }
+        } else {
+            if (objectsDetected) {
+                stateChanged = true;
+                lastKnownObjectCount = 0;
+                objectsDetected = false;
+            }
+            Brain.Screen.print("No objects detected.");
+            wait(0.5, SECONDS)
+            Brain.Screen.clearRow(1);
+        }
     }
-  }
+    return 0;
 }
