@@ -19,7 +19,7 @@ def when_started1():
             brain.screen.print("Blue!")
             while (vexcode_vision_5_objects and len(vexcode_vision_5_objects) > 0):
                 vexcode_vision_5_objects = vision_5.take_snapshot(vision_5__BLUEE)
-                drivetrain.drive(FORWARD)
+                drivetrain.drive_for(FORWARD, 4, INCHES, wait=True)
                 wait(5, MSEC)
         else:
             brain.screen.clear_screen()
@@ -27,7 +27,7 @@ def when_started1():
             drivetrain.turn_for(RIGHT, 72, DEGREES, wait=True)
             while not (vexcode_vision_5_objects and len(vexcode_vision_5_objects) > 0):
                 vexcode_vision_5_objects = vision_5.take_snapshot(vision_5__BLUEE)
-                drivetrain.turn(LEFT)
+                drivetrain.turn_for(LEFT, 10, DEGREES, wait=True)
                 wait(5, MSEC)
         wait(5, MSEC)
 
